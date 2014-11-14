@@ -21,6 +21,9 @@ setup(
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities",
     ],
+    setup_requires=(
+        'requests',
+    ),
     install_requires=(
         'requests',
     ),
