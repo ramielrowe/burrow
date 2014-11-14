@@ -22,7 +22,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 
-VERSION = '0.0.2'
+VERSION = '0.0.3'
 USER_AGENT = 'Burrow/{}'.format(VERSION)
 LOGIN_URL = 'https://home.nest.com/user/login'
 
