@@ -22,7 +22,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.poolmanager import PoolManager
 
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 USER_AGENT = 'Burrow/{}'.format(VERSION)
 LOGIN_URL = 'https://home.nest.com/user/login'
 
@@ -101,14 +101,22 @@ class NestClient():
                            login_dict['expires_in'],
                            login_dict['urls']['transport_url'])
 
-    def _get(self, path):
+    def _session_get(self, path):
         headers = {
             'user-agent': USER_AGENT,
             'X-nl-user-id': self.config.userid,
             'Authorization': 'Basic {}'.format(self.config.access_token),
         }
-        return self.session.get('{}{}'.format(self.config.transport_url, path),
-                                headers=headers).json()
+        url = '{}{}'.format(self.config.transport_url, path)
+        return self.session.get(url, headers=headers).json()
+
+    def _get(self, path):
+        resp = self._session_get(path)
+        if 'cmd' in resp and resp['cmd'] == 'REINIT_STATE':
+            # NOTE(ramielrowe) - API is telling us to re-login
+            self._login()
+            resp = self._session_get(path)
+        return resp
 
     def get_stats(self):
         return self._get('/v2/mobile/{}'.format(self.config.user))
